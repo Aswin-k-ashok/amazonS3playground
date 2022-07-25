@@ -8,7 +8,7 @@ const unlinkFile = util.promisify(fs.unlink)
 const multer = require('multer')
 const upload = multer({ dest: 'uploads/' })
 
-const { uploadFile, getFileStream } = require('./s3')
+const uploadFile = require('./s3')
 
 const app = express()
 
@@ -20,6 +20,8 @@ app.get('/images/:key', (req, res) => {
   readStream.pipe(res)
 })
 
+
+
 app.post('/images', upload.single('image'), async (req, res) => {
   const file = req.file
   console.log(file)
@@ -28,10 +30,8 @@ app.post('/images', upload.single('image'), async (req, res) => {
   // resize 
 
   const result = await uploadFile(file)
-  await unlinkFile(file.path)
   console.log(result)
-  const description = req.body.description
-  res.send({imagePath: `/images/${result.Key}`})
+  res.send("file uploaded successfully")
 })
 
 app.listen(5000, () => console.log("listening on port 5000"))
